@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Insurance Risk Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚗 Auto Insurance Risk Predictor</h1>
+            <p>Predict customer risk level based on insurance data</p>
+        </header>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2>Customer Information</h2>
+                <form id="predictionForm">
+                    <div class="form-grid">
+                        <!-- Numerical Features -->
+                        <div class="form-group">
+                            <label for="customer_lifetime_value">Customer Lifetime Value ($)</label>
+                            <input type="number" id="customer_lifetime_value" name="Customer Lifetime Value"
+                                   step="0.01" min="0" value="8000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="income">Annual Income ($)</label>
+                            <input type="number" id="income" name="Income"
+                                   step="0.01" min="0" value="50000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="monthly_premium_auto">Monthly Premium Auto ($)</label>
+                            <input type="number" id="monthly_premium_auto" name="Monthly Premium Auto"
+                                   step="0.01" min="0" value="100" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="months_since_last_claim">Months Since Last Claim</label>
+                            <input type="number" id="months_since_last_claim" name="Months Since Last Claim"
+                                   min="0" value="12" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="months_since_policy_inception">Months Since Policy Inception</label>
+                            <input type="number" id="months_since_policy_inception" name="Months Since Policy Inception"
+                                   min="1" value="24" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="number_of_open_complaints">Number of Open Complaints</label>
+                            <input type="number" id="number_of_open_complaints" name="Number of Open Complaints"
+                                   min="0" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="number_of_policies">Number of Policies</label>
+                            <input type="number" id="number_of_policies" name="Number of Policies"
+                                   min="1" value="2" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="total_claim_amount">Total Claim Amount ($)</label>
+                            <input type="number" id="total_claim_amount" name="Total Claim Amount"
+                                   step="0.01" min="0" value="500" required>
+                        </div>
+
+                        <!-- Categorical Features -->
+                        <div class="form-group">
+                            <label for="response">Customer Response to Marketing</label>
+                            <select id="response" name="Response" required>
+                                <option value="0">No</option>
+                                <option value="1" selected>Yes</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="coverage">Coverage Type</label>
+                            <select id="coverage" name="Coverage" required>
+                                <option value="Basic" selected>Basic</option>
+                                <option value="Extended">Extended</option>
+                                <option value="Premium">Premium</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="education">Education Level</label>
+                            <select id="education" name="Education" required>
+                                <option value="High School">High School</option>
+                                <option value="Bachelor" selected>Bachelor</option>
+                                <option value="College">College</option>
+                                <option value="Master">Master</option>
+                                <option value="Doctor">Doctor</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="employment_status">Employment Status</label>
+                            <select id="employment_status" name="EmploymentStatus" required>
+                                <option value="Employed" selected>Employed</option>
+                                <option value="Unemployed">Unemployed</option>
+                                <option value="Retired">Retired</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="marital_status">Marital Status</label>
+                            <select id="marital_status" name="Marital Status" required>
+                                <option value="Single">Single</option>
+                                <option value="Married" selected>Married</option>
+                                <option value="Divorced">Divorced</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location_code">Location</label>
+                            <select id="location_code" name="Location Code" required>
+                                <option value="Urban" selected>Urban</option>
+                                <option value="Suburban">Suburban</option>
+                                <option value="Rural">Rural</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vehicle_class">Vehicle Class</label>
+                            <select id="vehicle_class" name="Vehicle Class" required>
+                                <option value="Two-Door Car">Two-Door Car</option>
+                                <option value="Four-Door Car" selected>Four-Door Car</option>
+                                <option value="SUV">SUV</option>
+                                <option value="Luxury Car">Luxury Car</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vehicle_size">Vehicle Size</label>
+                            <select id="vehicle_size" name="Vehicle Size" required>
+                                <option value="Small">Small</option>
+                                <option value="Medsize" selected>Medium</option>
+                                <option value="Large">Large</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-text">Predict Risk</span>
+                            <span class="loading" style="display: none;">Analyzing...</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear Form</button>
+                        <button type="button" class="btn btn-info" onclick="fillSampleData()">Sample Data</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <h2>Prediction Results</h2>
+                <div class="result-card" id="resultCard">
+                    <div class="risk-indicator" id="riskIndicator">
+                        <div class="risk-level" id="riskLevel"></div>
+                        <div class="confidence" id="confidence"></div>
+                    </div>
+                    <div class="probability-bars">
+                        <div class="probability-item">
+                            <label>Low Risk Probability</label>
+                            <div class="progress-bar">
+                                <div class="progress-fill low-risk" id="lowRiskBar"></div>
+                                <span class="percentage" id="lowRiskPercent"></span>
+                            </div>
+                        </div>
+                        <div class="probability-item">
+                            <label>High Risk Probability</label>
+                            <div class="progress-bar">
+                                <div class="progress-fill high-risk" id="highRiskBar"></div>
+                                <span class="percentage" id="highRiskPercent"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="error-section" id="errorSection" style="display: none;">
+                <div class="error-card">
+                    <h3>⚠️ Error</h3>
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Built with Flask and Machine Learning • Auto Insurance Risk Assessment</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
